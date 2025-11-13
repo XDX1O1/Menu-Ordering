@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}">
+    <title>Pembayaran - ChopChop Restaurant</title>
+</head>
+<body>
+<!-- Customer Header -->
+<div th:replace="~{fragments/customer-header :: customer-header}"></div>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="card-title mb-0"><i class="fas fa-qrcode me-2"></i>Pembayaran QR Code</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <h3>Pesanan Berhasil Dibuat!</h3>
+                        <p class="text-muted">Nomor Pesanan: <strong id="orderNumber">-</strong></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Scan QR Code untuk Pembayaran</h5>
+                        <div id="qrCodeContainer" class="my-4">
+                            <img id="qrCodeImage" src="" alt="QR Code" class="img-fluid" style="max-width: 250px;">
+                        </div>
+                        <p class="text-muted">Total Pembayaran: <strong id="paymentAmount">Rp.0</strong></p>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Silakan scan QR code di atas menggunakan aplikasi e-wallet atau mobile banking Anda.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button class="btn btn-primary" onclick="checkPaymentStatus()">
+                            <i class="fas fa-sync-alt me-2"></i> Cek Status Pembayaran
+                        </button>
+                        <a th:href="@{/customer/menu}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i> Kembali ke Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-receipt me-2"></i>Detail Pesanan</h5>
+                </div>
+                <div class="card-body">
+                    <div id="orderDetails">
+                        <!-- Order details will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

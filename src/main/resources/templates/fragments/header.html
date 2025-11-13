@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="header">
+    <!-- Dynamic header based on user type -->
+    <th:block th:if="${#authorization.expression('isAuthenticated()')}">
+        <div th:replace="~{fragments/cashier-header :: cashier-header}"></div>
+    </th:block>
+    <th:block th:unless="${#authorization.expression('isAuthenticated()')}">
+        <div th:replace="~{fragments/customer-header :: customer-header}"></div>
+    </th:block>
+</div>
+</body>
+</html>

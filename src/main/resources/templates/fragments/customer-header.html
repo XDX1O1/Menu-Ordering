@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="customer-header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/customer/menu}">
+                <i class="fas fa-utensils me-2"></i>
+                <span th:text="${appName ?: 'ChopChop Restaurant'}">ChopChop Restaurant</span>
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <!-- Cart Icon with Badge -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link position-relative" href="#" id="cartDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              id="cartCount">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 300px;" aria-labelledby="cartDropdown">
+                        <h6 class="dropdown-header">Keranjang Belanja</h6>
+                        <div id="cartItems">
+                            <div class="text-center text-muted py-3">
+                                Keranjang kosong
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Subtotal:</strong>
+                            <strong id="cartSubtotal">Rp.0</strong>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/customer/cart}" class="btn btn-primary btn-sm">Lihat Keranjang</a>
+                            <button class="btn btn-outline-danger btn-sm" onclick="clearCart()">Bersihkan Keranjang</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

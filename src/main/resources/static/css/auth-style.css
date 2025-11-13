@@ -1,0 +1,36 @@
+/* Auth-specific styles */
+.auth-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.auth-logo {
+    font-size: 2.5rem;
+    color: #667eea;
+}
+
+.auth-btn {
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+.auth-form .form-control {
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.auth-form .input-group-text {
+    border-radius: 8px 0 0 8px;
+}
+
+.auth-form .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
+}

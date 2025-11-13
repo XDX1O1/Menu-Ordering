@@ -1,0 +1,105 @@
+package menuorderingapp.project.service.impl;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import menuorderingapp.project.model.Order;
+import menuorderingapp.project.repository.OrderRepository;
+import menuorderingapp.project.service.PaymentService;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Optional;
+
+@Service
+public class PaymentServiceImpl implements PaymentService {
+
+    private final OrderRepository orderRepository;
+
+    public PaymentServiceImpl(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
+    @Override
+    public String generateQRCode(String paymentData) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(paymentData, BarcodeFormat.QR_CODE, 200, 200);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+
+            byte[] qrCodeBytes = outputStream.toByteArray();
+            return "data:image/png;base64," + Base64.getEncoder().encodeToString(qrCodeBytes);
+
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Failed to generate QR code", e);
+        }
+    }
+
+    @Override
+    public boolean processQRPayment(String orderNumber, String qrData) {
+        Optional<Order> orderOpt = orderRepository.findByOrderNumber(orderNumber);
+        if (orderOpt.isEmpty()) {
+            return false;
+        }
+
+        Order order = orderOpt.get();
+
+        // Simulate QR payment processing
+        // In real implementation, this would integrate with payment gateway
+        try {
+            Thread.sleep(1000); // Simulate processing time
+
+            order.setPaymentStatus(Order.PaymentStatus.PAID);
+            order.setStatus(Order.OrderStatus.CONFIRMED);
+            orderRepository.save(order);
+
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean processCashPayment(String orderNumber, Double amountTendered) {
+        Optional<Order> orderOpt = orderRepository.findByOrderNumber(orderNumber);
+        if (orderOpt.isEmpty()) {
+            return false;
+        }
+
+        Order order = orderOpt.get();
+
+        // Check if enough cash was tendered
+        if (amountTendered < order.getTotal().doubleValue()) {
+            return false;
+        }
+
+        order.setPaymentStatus(Order.PaymentStatus.PAID);
+        order.setStatus(Order.OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+
+        return true;
+    }
+
+    @Override
+    public String generatePaymentQRCode(Order order) {
+        String paymentData = String.format(
+                "order_number=%s&amount=%s&merchant=ChopChopRestaurant",
+                order.getOrderNumber(),
+                order.getTotal().toString()
+        );
+        return generateQRCode(paymentData);
+    }
+
+    @Override
+    public boolean verifyPayment(String orderNumber) {
+        Optional<Order> orderOpt = orderRepository.findByOrderNumber(orderNumber);
+        return orderOpt.isPresent() && orderOpt.get().getPaymentStatus() == Order.PaymentStatus.PAID;
+    }
+}

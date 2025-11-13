@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}">
+    <title>Menu - ChopChop Restaurant</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+<!-- Customer Header -->
+<div th:replace="~{fragments/customer-header :: customer-header}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Categories -->
+        <div th:replace="~{fragments/menu-sidebar :: menu-sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Menu Makanan & Minuman</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari menu..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Items Grid -->
+            <div class="row" id="menuItems">
+                <div th:each="menu : ${menus}" class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="card menu-card h-100" th:data-category="${menu.category.name}">
+                        <div class="card-body">
+                            <div th:if="${menu.imageUrl}" class="text-center mb-3">
+                                <img th:src="${menu.imageUrl}" th:alt="${menu.name}" class="img-fluid rounded" style="max-height: 120px;">
+                            </div>
+                            <h5 class="card-title" th:text="${menu.name}"></h5>
+                            <p class="card-text text-muted small" th:text="${menu.description}"></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="h5 text-primary mb-0" th:text="'Rp ' + ${#numbers.formatDecimal(menu.currentPrice, 0, 'COMMA', 2, 'POINT')}"></span>
+                                    <span th:if="${menu.isPromo && menu.promoPrice != null}"
+                                          class="text-muted text-decoration-line-through small ms-2"
+                                          th:text="'Rp ' + ${#numbers.formatDecimal(menu.price, 0, 'COMMA', 2, 'POINT')}"></span>
+                                </div>
+                                <div th:if="${menu.isPromo}" class="badge bg-danger">PROMO</div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary btn-sm btn-decrease"
+                                            th:data-menu-id="${menu.id}">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="form-control form-control-sm text-center quantity-input"
+                                           th:data-menu-id="${menu.id}" value="1" min="1" max="10">
+                                    <button class="btn btn-outline-secondary btn-sm btn-increase"
+                                            th:data-menu-id="${menu.id}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary btn-sm w-100 mt-2 btn-add-to-cart"
+                                        th:data-menu-id="${menu.id}"
+                                        th:disabled="${!menu.available}">
+                                    <i class="fas fa-cart-plus me-1"></i>
+                                    <span th:text="${menu.available ? 'Tambah' : 'Tidak Tersedia'}"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/menu-filter.js}"></script>
+</body>
+</html>

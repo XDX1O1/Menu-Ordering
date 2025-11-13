@@ -1,0 +1,40 @@
+package menuorderingapp.project.service;
+
+import menuorderingapp.project.model.Order;
+import menuorderingapp.project.model.OrderItem;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface OrderService {
+
+    Order createOrder(Order order);
+
+    Optional<Order> getOrderById(Long id);
+
+    Optional<Order> getOrderByNumber(String orderNumber);
+
+    List<Order> getAllOrders();
+
+    List<Order> getOrdersByStatus(Order.OrderStatus status);
+
+    List<Order> getOrdersByCashier(Long cashierId);
+
+    Order updateOrderStatus(Long orderId, Order.OrderStatus status);
+
+    Order processPayment(Long orderId, Order.PaymentMethod paymentMethod);
+
+    Order addItemToOrder(Long orderId, Long menuId, Integer quantity);
+
+    Order removeItemFromOrder(Long orderId, Long orderItemId);
+
+    Order updateItemQuantity(Long orderId, Long orderItemId, Integer quantity);
+
+    void cancelOrder(Long orderId);
+
+    List<Order> getTodayOrders();
+
+    Double getTotalRevenueToday();
+
+    long getPendingOrdersCount();
+}

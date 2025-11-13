@@ -1,0 +1,106 @@
+/* Cashier Interface Styles */
+body {
+    background-color: #f8f9fc;
+}
+
+.card {
+    border: none;
+    border-radius: 0.35rem;
+}
+
+.card-header {
+    border-bottom: 1px solid #e3e6f0;
+    background-color: #f8f9fc;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+/* Table Styles */
+.table th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
+
+/* Button Styles */
+.btn-action {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Status Badges */
+.badge-status-pending { background-color: #f6c23e; }
+.badge-status-confirmed { background-color: #36b9cc; }
+.badge-status-preparing { background-color: #4e73df; }
+.badge-status-ready { background-color: #1cc88a; }
+.badge-status-completed { background-color: #858796; }
+.badge-status-cancelled { background-color: #e74a3b; }
+
+/* Sidebar Navigation */
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+/* Dashboard Cards */
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}
+
+.text-uppercase {
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Tables */
+.table-responsive {
+    border-radius: 0.35rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head}">
+    <title>Pengaturan - ChopChop Restaurant</title>
+</head>
+<body>
+<!-- Cashier Header -->
+<div th:replace="~{fragments/cashier-header :: cashier-header}"></div>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <main class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="fas fa-cog me-2"></i>Pengaturan Menu
+                </h1>
+            </div>
+
+            <!-- Menu Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Daftar Menu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="menusTable">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Nama</th>
+                                <th>Kategori</th>
+                                <th>Harga</th>
+                                <th>Status</th>
+                                <th>Promo</th>
+                                <th>Aksi</th>
+                            </tr>
+                            </thead>
+                            <tbody id="menusTableBody">
+                            <tr th:each="menu : ${menus}">
+                                <td th:text="${menu.name}"></td>
+                                <td th:text="${menu.category.name}"></td>
+                                <td th:text="'Rp ' + ${#numbers.formatDecimal(menu.price, 0, 'COMMA', 2, 'POINT')}"></td>
+                                <td>
+                                    <span th:if="${menu.available}" class="badge bg-success">Tersedia</span>
+                                    <span th:unless="${menu.available}" class="badge bg-danger">Tidak Tersedia</span>
+                                </td>
+                                <td>
+                                    <span th:if="${menu.isPromo}" class="badge bg-warning">Promo</span>
+                                    <span th:unless="${menu.isPromo}" class="badge bg-secondary">Normal</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary"
+                                                th:onclick="'cashierApp.editMenu(' + ${menu.id} + ')'">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success"
+                                                th:onclick="'cashierApp.toggleMenuAvailability(' + ${menu.id} + ')'"
+                                                th:text="${menu.available ? 'Nonaktifkan' : 'Aktifkan'}">
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Management -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Kategori Menu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form th:action="@{/cashier/api/categories}" method="post" th:object="${categoryRequest}" id="categoryForm">
+                                <div class="mb-3">
+                                    <label for="categoryName" class="form-label">Nama Kategori</label>
+                                    <input type="text" class="form-control" id="categoryName" th:field="*{name}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="displayOrder" class="form-label">Urutan Tampilan</label>
+                                    <input type="number" class="form-control" id="displayOrder" th:field="*{displayOrder}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Tambah Kategori</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Nama Kategori</th>
+                                        <th>Urutan</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="category : ${categories}">
+                                        <td th:text="${category.name}"></td>
+                                        <td th:text="${category.displayOrder}"></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    th:onclick="'cashierApp.deleteCategory(' + ${category.id} + ')'">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

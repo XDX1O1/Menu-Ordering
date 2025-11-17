@@ -16,10 +16,10 @@
             this.connected = true;
             this.reconnectAttempts = 0;
 
-            // Subscribe to order updates
+           
             this.subscribeToOrders();
 
-            // Notify any listeners
+           
             this.onConnected();
         }, (error) => {
             console.log('WebSocket connection error: ', error);
@@ -35,6 +35,11 @@
                 this.handleOrderUpdate(orderUpdate);
             });
 
+            this.stompClient.subscribe('/topic/dashboard', (message) => {
+                console.log('Dashboard update received:', message.body);
+                this.handleDashboardUpdate();
+            });
+
             this.stompClient.subscribe('/topic/notifications', (message) => {
                 const notification = JSON.parse(message.body);
                 this.handleNotification(notification);
@@ -42,13 +47,30 @@
         }
     }
 
+    handleDashboardUpdate() {
+       
+        if (window.cashierApp && typeof window.cashierApp.loadDashboardData === 'function') {
+            console.log('Refreshing dashboard data...');
+            window.cashierApp.loadDashboardData();
+        }
+
+       
+        if (window.cashierApp && typeof window.cashierApp.loadOrdersPage === 'function') {
+            const ordersTable = document.getElementById('ordersTableBody');
+            if (ordersTable) {
+                console.log('Refreshing orders data...');
+                window.cashierApp.loadOrdersPage();
+            }
+        }
+    }
+
     handleOrderUpdate(orderUpdate) {
-        // Update UI based on order update
+       
         if (typeof window.orderUpdateHandler === 'function') {
             window.orderUpdateHandler(orderUpdate);
         }
 
-        // Show notification
+       
         this.showNotification(`Order ${orderUpdate.orderNumber} updated: ${orderUpdate.status}`);
     }
 
@@ -57,7 +79,7 @@
     }
 
     showNotification(message, type = 'info') {
-        // Create toast notification
+       
         const toast = document.createElement('div');
         toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
         toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
@@ -68,7 +90,7 @@
         `;
         document.body.appendChild(toast);
 
-        // Auto remove after 5 seconds
+       
         setTimeout(() => {
             if (toast.parentNode) {
                 toast.remove();

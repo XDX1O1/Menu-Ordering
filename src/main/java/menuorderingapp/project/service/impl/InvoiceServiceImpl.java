@@ -67,6 +67,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Invoice> getInvoiceByOrder(Order order) {
+        return invoiceRepository.findByOrder(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Invoice> getInvoicesByDateRange(String startDate, String endDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime start = LocalDate.parse(startDate, formatter).atStartOfDay();

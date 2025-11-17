@@ -33,12 +33,15 @@ public class SecurityConfig {
                         // Public endpoints (customer facing)
                         .requestMatchers(
                                 "/",
-                                "/login",           // Convenient redirect to /auth/login
-                                "/customer",        // Redirect to /customer/menu
+                                "/login",          
+                                "/customer",       
                                 "/customer/**",
                                 "/auth/login",
                                 "/auth/api/login",
-                                "/setup/**", // remove when done setting up the app only for development
+                                "/api/menus",      
+                                "/api/categories", 
+                                "/ws/**",          
+                                "/setup/**", // Development only
                                 "/static/**",
                                 "/css/**",
                                 "/js/**",

@@ -86,5 +86,73 @@
         </div>
     </div>
 </div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proses Pembayaran</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">No. Pesanan</label>
+                    <input type="text" class="form-control" id="paymentOrderNumber" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Total Pembayaran</label>
+                    <input type="text" class="form-control" id="paymentTotal" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Metode Pembayaran</label>
+                    <select class="form-select" id="paymentMethod">
+                        <option value="CASH">Tunai (Cash)</option>
+                        <option value="QR_CODE">QR Code</option>
+                    </select>
+                </div>
+                <div id="cashPaymentSection" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah Uang Diterima</label>
+                        <input type="number" class="form-control" id="cashAmount"
+                               placeholder="Masukkan jumlah uang" min="0" step="1000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kembalian</label>
+                        <input type="text" class="form-control" id="changeAmount" readonly>
+                    </div>
+                </div>
+                <div id="qrPaymentSection" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-qrcode me-2"></i>
+                        Silakan scan QR code untuk pembayaran
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kode Transaksi QR</label>
+                        <input type="text" class="form-control" id="qrTransactionCode"
+                               placeholder="Masukkan kode transaksi">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="processPaymentBtn">Proses Pembayaran</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<!-- WebSocket Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<!-- WebSocket Client -->
+<script th:src="@{/js/websocket-client.js}"></script>
+
+<!-- Cashier App JavaScript -->
+<script th:src="@{/js/cashier-app.js}"></script>
 </body>
 </html>

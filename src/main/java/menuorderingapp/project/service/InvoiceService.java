@@ -14,6 +14,8 @@ public interface InvoiceService {
 
     Optional<Invoice> getInvoiceByNumber(String invoiceNumber);
 
+    Optional<Invoice> getInvoiceByOrder(Order order);
+
     List<Invoice> getInvoicesByDateRange(String startDate, String endDate);
 
     byte[] generateInvoicePdf(Long invoiceId);

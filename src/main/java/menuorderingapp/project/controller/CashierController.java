@@ -2,7 +2,6 @@ package menuorderingapp.project.controller;
 
 import menuorderingapp.project.model.*;
 import menuorderingapp.project.model.dto.*;
-import menuorderingapp.project.security.CashierUserDetails;
 import menuorderingapp.project.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -10,10 +9,8 @@ import menuorderingapp.project.util.SecurityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,27 +25,27 @@ public class CashierController extends BaseController{
     private final ReportService reportService;
     private final InvoiceService invoiceService;
     private final AuthService authService;
+    private final OrderWebSocketController webSocketController;
 
     public CashierController(OrderService orderService, MenuService menuService,
                              PaymentService paymentService, ReportService reportService,
-                             InvoiceService invoiceService, AuthService authService) {
+                             InvoiceService invoiceService, AuthService authService,
+                             OrderWebSocketController webSocketController) {
         this.orderService = orderService;
         this.menuService = menuService;
         this.paymentService = paymentService;
         this.reportService = reportService;
         this.invoiceService = invoiceService;
         this.authService = authService;
+        this.webSocketController = webSocketController;
     }
 
-    // Dashboard - Kasir Interface
     @GetMapping("/dashboard")
     public String showDashboard(Model model, HttpSession session) {
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return "redirect:/auth/login";
         }
 
-        // Dashboard statistics
         long pendingOrders = orderService.getPendingOrdersCount();
         double todayRevenue = orderService.getTotalRevenueToday();
         List<Order> recentOrders = orderService.getTodayOrders();
@@ -62,29 +59,24 @@ public class CashierController extends BaseController{
         return "cashier/dashboard";
     }
 
-    // Dashboard Stats API
     @GetMapping("/api/dashboard/stats")
     @ResponseBody
     public ResponseEntity<ApiResponse<DashboardStatsResponse>> getDashboardStats(HttpSession session) {
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
         try {
-            // Get dashboard statistics
             long pendingOrders = orderService.getPendingOrdersCount();
             double todayRevenue = orderService.getTotalRevenueToday();
             List<Order> recentOrders = orderService.getTodayOrders();
             long availableMenus = menuService.getAvailableMenus().size();
             long todayOrdersCount = (long) recentOrders.size();
 
-            // Convert orders to OrderResponse DTOs
             List<OrderResponse> orderResponses = recentOrders.stream()
                     .map(this::convertToOrderResponse)
                     .collect(Collectors.toList());
 
-            // Build response
             DashboardStatsResponse stats = new DashboardStatsResponse(
                     todayRevenue,
                     todayOrdersCount,
@@ -103,8 +95,7 @@ public class CashierController extends BaseController{
     // Orders Management Page
     @GetMapping("/orders")
     public String showOrdersPage(Model model, HttpSession session) {
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return "redirect:/auth/login";
         }
 
@@ -116,6 +107,29 @@ public class CashierController extends BaseController{
         return "cashier/orders";
     }
 
+    // Get All Orders API
+    @GetMapping("/api/orders/all")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> getAllOrders(HttpSession session) {
+        if (!isAuthenticatedCashier()) {
+            return unauthorized("Not authenticated");
+        }
+
+        try {
+            List<Order> orders = orderService.getAllOrders();
+
+            
+            List<OrderResponse> orderResponses = orders.stream()
+                    .map(this::convertToOrderResponse)
+                    .collect(Collectors.toList());
+
+            return success(orderResponses);
+
+        } catch (Exception e) {
+            return error("Failed to fetch orders: " + e.getMessage());
+        }
+    }
+
     // Create New Order (Cashier Assisted)
     @PostMapping("/api/orders")
     @ResponseBody
@@ -123,8 +137,7 @@ public class CashierController extends BaseController{
             @Valid @RequestBody OrderRequest orderRequest,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
@@ -137,12 +150,6 @@ public class CashierController extends BaseController{
             order.setStatus(Order.OrderStatus.PENDING);
             order.setPaymentStatus(Order.PaymentStatus.PENDING);
 
-            // Set cashier if available
-            if (cashierId != null) {
-                // In a real app, you'd fetch the cashier entity
-                // For now, we'll just store the ID
-            }
-
             // Add items to order
             for (OrderItemRequest itemRequest : orderRequest.getItems()) {
                 Optional<Menu> menu = menuService.getMenuById(itemRequest.getMenuId());
@@ -154,6 +161,10 @@ public class CashierController extends BaseController{
 
             Order savedOrder = orderService.createOrder(order);
             OrderResponse orderResponse = convertToOrderResponse(savedOrder);
+
+            // Broadcast order creation via WebSocket
+            webSocketController.broadcastOrderUpdate(orderResponse);
+            webSocketController.broadcastDashboardUpdate();
 
             return created(orderResponse);
 
@@ -170,14 +181,18 @@ public class CashierController extends BaseController{
             @RequestParam Order.OrderStatus status,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
         try {
             Order updatedOrder = orderService.updateOrderStatus(orderId, status);
             OrderResponse orderResponse = convertToOrderResponse(updatedOrder);
+
+            // Broadcast order update via WebSocket
+            webSocketController.broadcastOrderUpdate(orderResponse);
+            webSocketController.broadcastDashboardUpdate();
+
             return success("Order status updated", orderResponse);
 
         } catch (Exception e) {
@@ -192,8 +207,7 @@ public class CashierController extends BaseController{
             @Valid @RequestBody PaymentRequest paymentRequest,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
@@ -232,6 +246,11 @@ public class CashierController extends BaseController{
                 Optional<Order> orderOpt = orderService.getOrderByNumber(paymentRequest.getOrderNumber());
                 if (orderOpt.isPresent() && cashierId != null) {
                     invoiceService.generateInvoice(orderOpt.get(), cashierId);
+
+                    // Broadcast payment update via WebSocket
+                    OrderResponse orderResponse = convertToOrderResponse(orderOpt.get());
+                    webSocketController.broadcastOrderUpdate(orderResponse);
+                    webSocketController.broadcastDashboardUpdate();
                 }
 
                 return success(paymentResponse);
@@ -244,60 +263,39 @@ public class CashierController extends BaseController{
         }
     }
 
-    // Reports Page - Laporan
     @GetMapping("/reports")
     public String showReportsPage(Model model, HttpSession session) {
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return "redirect:/auth/login";
         }
 
-        // Default to today's report
-        LocalDate today = LocalDate.now();
-        var salesReport = reportService.getDailySalesReport(today);
-
-        model.addAttribute("salesReport", salesReport);
         model.addAttribute("cashier", session.getAttribute("cashier"));
         model.addAttribute("currentPath", "/cashier/reports");
-
         return "cashier/reports";
     }
 
-    // Generate Sales Report
     @GetMapping("/api/reports/sales")
     @ResponseBody
     public ResponseEntity<ApiResponse<SalesReportResponse>> getSalesReport(
-            @RequestParam String startDate,
-            @RequestParam String endDate,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
         try {
-            var report = reportService.getSalesReport(
-                    LocalDate.parse(startDate).atStartOfDay(),
-                    LocalDate.parse(endDate).atTime(23, 59, 59)
-            );
-
             SalesReportResponse response = new SalesReportResponse();
-            // Convert report data to response DTO
-            // This would involve mapping the report map to the response object
-
             return success(response);
-
         } catch (Exception e) {
             return error("Failed to generate report: " + e.getMessage());
         }
     }
 
-    // Settings Page - Pengaturan
     @GetMapping("/settings")
     public String showSettingsPage(Model model, HttpSession session) {
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return "redirect:/auth/login";
         }
 
@@ -321,8 +319,7 @@ public class CashierController extends BaseController{
             @PathVariable Long menuId,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
@@ -344,13 +341,12 @@ public class CashierController extends BaseController{
             @Valid @RequestBody MenuRequest menuRequest,
             HttpSession session) {
 
-        CashierUserDetails currentCashier = SecurityUtils.getCurrentCashier();
-        if (currentCashier == null) {
+        if (!isAuthenticatedCashier()) {
             return unauthorized("Not authenticated");
         }
 
         try {
-            // Convert request to entity and update
+            
             Menu menuDetails = new Menu();
             menuDetails.setName(menuRequest.getName());
             menuDetails.setDescription(menuRequest.getDescription());
@@ -374,12 +370,9 @@ public class CashierController extends BaseController{
         }
     }
 
-    // Helper methods
-//    private boolean isAuthenticated(HttpSession session) {
-//        return SecurityUtils.isAuthenticated();
-//    }
-
-    // Conversion methods (similar to CustomerController)
+    private boolean isAuthenticatedCashier() {
+        return SecurityUtils.getCurrentCashier() != null;
+    }
     private MenuResponse convertToMenuResponse(Menu menu) {
         MenuResponse response = new MenuResponse();
         response.setId(menu.getId());
@@ -436,5 +429,100 @@ public class CashierController extends BaseController{
         }
 
         return response;
+    }
+
+    // Get All Categories
+    @GetMapping("/api/categories")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
+        try {
+            List<Category> categories = menuService.getAllCategories();
+            List<CategoryResponse> categoryResponses = categories.stream()
+                    .map(cat -> {
+                        CategoryResponse response = new CategoryResponse();
+                        response.setId(cat.getId());
+                        response.setName(cat.getName());
+                        response.setDisplayOrder(cat.getDisplayOrder());
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+
+            return success(categoryResponses);
+
+        } catch (Exception e) {
+            return error("Failed to fetch categories: " + e.getMessage());
+        }
+    }
+
+    // Delete Category
+    @DeleteMapping("/api/categories/{categoryId}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(
+            @PathVariable Long categoryId,
+            HttpSession session) {
+
+        if (!isAuthenticatedCashier()) {
+            return unauthorized("Not authenticated");
+        }
+
+        try {
+            menuService.deleteCategory(categoryId);
+            return success("Category deleted successfully", null);
+
+        } catch (Exception e) {
+            return error("Failed to delete category: " + e.getMessage());
+        }
+    }
+
+    // Get Invoice by Order Number
+    @GetMapping("/api/invoices/order/{orderNumber}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Invoice>> getInvoiceByOrderNumber(
+            @PathVariable String orderNumber,
+            HttpSession session) {
+
+        if (!isAuthenticatedCashier()) {
+            return unauthorized("Not authenticated");
+        }
+
+        try {
+            Optional<Order> orderOpt = orderService.getOrderByNumber(orderNumber);
+            if (orderOpt.isEmpty()) {
+                return error("Order not found");
+            }
+
+            Optional<Invoice> invoiceOpt = invoiceService.getInvoiceByOrder(orderOpt.get());
+            if (invoiceOpt.isEmpty()) {
+                return error("Invoice not found for this order");
+            }
+
+            return success(invoiceOpt.get());
+
+        } catch (Exception e) {
+            return error("Failed to retrieve invoice: " + e.getMessage());
+        }
+    }
+
+    // Download Invoice PDF
+    @GetMapping("/api/invoices/{invoiceId}/pdf")
+    public ResponseEntity<byte[]> downloadInvoicePdf(
+            @PathVariable Long invoiceId,
+            HttpSession session) {
+
+        if (!isAuthenticatedCashier()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            byte[] pdfBytes = invoiceService.generateInvoicePdf(invoiceId);
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .header("Content-Disposition", "attachment; filename=invoice-" + invoiceId + ".pdf")
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 }

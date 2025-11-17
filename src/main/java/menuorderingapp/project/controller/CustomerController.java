@@ -108,7 +108,6 @@ public class CustomerController extends BaseController{
             order.setStatus(Order.OrderStatus.PENDING);
             order.setPaymentStatus(Order.PaymentStatus.PENDING);
 
-            // Add items to order
             for (OrderItemRequest itemRequest : orderRequest.getItems()) {
                 Optional<Menu> menu = menuService.getMenuById(itemRequest.getMenuId());
                 if (menu.isPresent() && menu.get().getAvailable()) {
@@ -234,7 +233,6 @@ public class CustomerController extends BaseController{
 
             Order order = orderOpt.get();
 
-            // Update order status to PAID and CONFIRMED
             order.setPaymentStatus(Order.PaymentStatus.PAID);
             order.setPaymentMethod(Order.PaymentMethod.QR_CODE);
             order.setStatus(Order.OrderStatus.CONFIRMED);
@@ -290,7 +288,6 @@ public class CustomerController extends BaseController{
 
 
 
-    // Helper methods for entity-DTO conversion
     private MenuResponse convertToMenuResponse(Menu menu) {
         MenuResponse response = new MenuResponse();
         response.setId(menu.getId());
@@ -326,7 +323,6 @@ public class CustomerController extends BaseController{
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
 
-        // Convert order items
         List<OrderItemResponse> itemResponses = order.getOrderItems().stream()
                 .map(this::convertToOrderItemResponse)
                 .collect(Collectors.toList());

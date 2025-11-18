@@ -47,10 +47,10 @@
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user me-1"></i>
-                            <span sec:authentication="principal.displayName">kasir 1</span>
+                            <span th:text="${cashier != null ? cashier.displayName : 'Cashier'}">Cashier</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><span class="dropdown-item-text text-muted" sec:authentication="principal.username"></span></li>
+                            <li><span class="dropdown-item-text text-muted" th:text="${cashier != null ? cashier.username : ''}"></span></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form th:action="@{/auth/logout}" method="post" class="d-inline">

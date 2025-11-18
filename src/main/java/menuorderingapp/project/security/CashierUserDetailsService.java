@@ -6,12 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
-@Transactional
 public class CashierUserDetailsService implements UserDetailsService {
 
     private final CashierRepository cashierRepository;
@@ -22,12 +18,9 @@ public class CashierUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Cashier> cashierOpt = cashierRepository.findByUsernameAndIsActiveTrue(username);
+        Cashier cashier = cashierRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        if (cashierOpt.isEmpty()) {
-            throw new UsernameNotFoundException("Cashier not found with username: " + username);
-        }
-
-        return new CashierUserDetails(cashierOpt.get());
+        return new CashierUserDetails(cashier);
     }
 }

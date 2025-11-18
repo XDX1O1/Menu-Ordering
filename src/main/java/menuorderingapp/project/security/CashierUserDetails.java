@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-
 public class CashierUserDetails implements UserDetails {
 
     private final Cashier cashier;
@@ -17,17 +16,24 @@ public class CashierUserDetails implements UserDetails {
         this.cashier = cashier;
     }
 
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public Long getCashierId() {
+        return cashier.getId();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + cashier.getRole().name()));
+        return Collections.singletonList(
+                new SimpleGrantedAuthority(cashier.getRole().name())
+        );
     }
 
     @Override
     public String getPassword() {
-        String pwd = cashier.getPasswordHash();
-        System.out.println("DEBUG: Retrieved password hash: " + pwd);
-        System.out.println("DEBUG: Hash length: " + (pwd != null ? pwd.length() : "NULL"));
-        return pwd;
+        return cashier.getPasswordHash();
     }
 
     @Override
@@ -42,7 +48,7 @@ public class CashierUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return cashier.getIsActive();
+        return true;
     }
 
     @Override
@@ -52,18 +58,6 @@ public class CashierUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return cashier.getIsActive();
-    }
-
-    public Cashier getCashier() {
-        return cashier;
-    }
-
-    public Long getCashierId() {
-        return cashier.getId();
-    }
-
-    public String getDisplayName() {
-        return cashier.getDisplayName();
+        return cashier.getIsActive() != null && cashier.getIsActive();
     }
 }

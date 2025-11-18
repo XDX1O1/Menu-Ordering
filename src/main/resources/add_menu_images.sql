@@ -5,7 +5,7 @@
 USE restaurant_db;
 
 -- PROMO Items
-UPDATE menus SET image_url = 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400&h=300&fit=crop' WHERE name = 'Paket Hemat 1';
+UPDATE menus SET image_url = '/images/menu/paket-hemat-1.jpg' WHERE name = 'Paket Hemat 1';
 UPDATE menus SET image_url = 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=300&fit=crop' WHERE name = 'Paket Keluarga';
 UPDATE menus SET image_url = 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop' WHERE name = 'Promo Akhir Tahun';
 

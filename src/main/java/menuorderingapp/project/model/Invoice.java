@@ -21,7 +21,7 @@ public class Invoice {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cashier_id", nullable = false)
+    @JoinColumn(name = "cashier_id")
     private Cashier cashier;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
@@ -42,7 +42,9 @@ public class Invoice {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
 
         if (invoiceNumber == null) {
             invoiceNumber = "INV-" + System.currentTimeMillis();

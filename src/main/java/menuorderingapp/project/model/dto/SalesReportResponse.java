@@ -13,11 +13,11 @@ public class SalesReportResponse {
     private Map<String, Double> revenueByPaymentMethod;
     private String generatedAt;
 
-    // Constructors
+
     public SalesReportResponse() {
     }
 
-    // Getters and Setters
+
     public LocalDateTime getStartDate() {
         return startDate;
     }

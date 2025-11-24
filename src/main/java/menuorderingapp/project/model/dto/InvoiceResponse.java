@@ -17,11 +17,11 @@ public class InvoiceResponse {
     private Order.PaymentMethod paymentMethod;
     private LocalDateTime createdAt;
 
-    // Constructors
+
     public InvoiceResponse() {
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

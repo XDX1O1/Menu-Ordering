@@ -16,7 +16,7 @@ public class CashierRequest {
 
     private Cashier.CashierRole role = Cashier.CashierRole.CASHIER;
 
-    // Constructors
+
     public CashierRequest() {
     }
 
@@ -26,7 +26,7 @@ public class CashierRequest {
         this.displayName = displayName;
     }
 
-    // Getters and Setters
+
     public String getUsername() {
         return username;
     }

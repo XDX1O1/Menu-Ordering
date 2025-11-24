@@ -21,11 +21,11 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructors
+
     public OrderResponse() {
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

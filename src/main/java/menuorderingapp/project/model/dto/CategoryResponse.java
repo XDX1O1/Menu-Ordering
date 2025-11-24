@@ -12,11 +12,11 @@ public class CategoryResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructors
+
     public CategoryResponse() {
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

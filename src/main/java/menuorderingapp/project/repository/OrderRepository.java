@@ -42,4 +42,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                                   @Param("end") LocalDateTime end);
 
     List<Order> findByCustomerNameContainingIgnoreCaseOrderByCreatedAtDesc(String customerName);
+
+    List<Order> findAllByOrderByCreatedAtDesc();
+
+    @Query("SELECT o FROM Order o WHERE DATE(o.createdAt) = CURRENT_DATE ORDER BY o.createdAt DESC")
+    List<Order> findTodayOrders();
 }

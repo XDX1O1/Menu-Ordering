@@ -17,7 +17,7 @@ public class OrderRequest {
 
     private List<OrderItemRequest> items = new ArrayList<>();
 
-    // Constructors
+
     public OrderRequest() {
     }
 
@@ -26,7 +26,7 @@ public class OrderRequest {
         this.customerName = customerName;
     }
 
-    // Getters and Setters
+
     public Order.OrderType getOrderType() {
         return orderType;
     }

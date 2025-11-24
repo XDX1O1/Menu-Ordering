@@ -33,10 +33,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice generateInvoice(Order order, Long cashierId) {
-        Cashier cashier = cashierRepository.findById(cashierId)
-                .orElseThrow(() -> new RuntimeException("Cashier not found with id: " + cashierId));
+        Cashier cashier = null;
+        if (cashierId != null) {
+            cashier = cashierRepository.findById(cashierId)
+                    .orElseThrow(() -> new RuntimeException("Cashier not found with id: " + cashierId));
+        }
 
-        // Check if invoice already exists for this order
         Optional<Invoice> existingInvoice = invoiceRepository.findByOrder(order);
         if (existingInvoice.isPresent()) {
             return existingInvoice.get();
@@ -48,7 +50,14 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoice.setTotalAmount(order.getTotal());
         invoice.setTaxAmount(calculateTax(order.getTotal()));
         invoice.setFinalAmount(invoice.getTotalAmount().add(invoice.getTaxAmount()));
-        invoice.setPaymentMethod(order.getPaymentMethod());
+
+        Order.PaymentMethod paymentMethod = order.getPaymentMethod();
+        if (paymentMethod == null) {
+            paymentMethod = Order.PaymentMethod.CASH;
+        }
+        invoice.setPaymentMethod(paymentMethod);
+
+        invoice.setCreatedAt(order.getCreatedAt());
 
         return invoiceRepository.save(invoice);
     }
@@ -83,8 +92,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public byte[] generateInvoicePdf(Long invoiceId) {
-        // This would integrate with a PDF generation library like iText or Apache PDFBox
-        // For now, return a placeholder
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new RuntimeException("Invoice not found with id: " + invoiceId));
 
@@ -99,7 +106,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private BigDecimal calculateTax(java.math.BigDecimal amount) {
-        // Simple tax calculation - 10% tax
         return amount.multiply(java.math.BigDecimal.valueOf(0.10));
     }
 
@@ -107,7 +113,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         StringBuilder content = new StringBuilder();
         content.append("INVOICE: ").append(invoice.getInvoiceNumber()).append("\n");
         content.append("Date: ").append(invoice.getCreatedAt()).append("\n");
-        content.append("Cashier: ").append(invoice.getCashier().getDisplayName()).append("\n");
+        content.append("Cashier: ").append(invoice.getCashier() != null ? invoice.getCashier().getDisplayName() : "Self-Service").append("\n");
         content.append("Order: ").append(invoice.getOrder().getOrderNumber()).append("\n");
         content.append("Customer: ").append(invoice.getOrder().getCustomerName()).append("\n");
         content.append("Payment Method: ").append(invoice.getPaymentMethod()).append("\n\n");

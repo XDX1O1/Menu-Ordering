@@ -14,7 +14,7 @@ public class CartItemResponse {
     private BigDecimal subtotal;
     private String imageUrl;
 
-    // Constructors
+
     public CartItemResponse() {
     }
 
@@ -26,7 +26,7 @@ public class CartItemResponse {
         this.subtotal = subtotal;
     }
 
-    // Getters and Setters
+
     public Long getMenuId() {
         return menuId;
     }

@@ -5,11 +5,11 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // Redirect root to customer menu
         registry.addViewController("/").setViewName("redirect:/customer/menu");
         registry.addViewController("/customer").setViewName("redirect:/customer/menu");
         registry.addViewController("/cashier").setViewName("redirect:/cashier/dashboard");

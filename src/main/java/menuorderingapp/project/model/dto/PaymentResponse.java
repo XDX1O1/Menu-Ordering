@@ -8,7 +8,7 @@ public class PaymentResponse {
     private String qrCodeImage; // Base64 encoded QR code
     private Double change; // For cash payments
 
-    // Constructors
+
     public PaymentResponse() {
     }
 
@@ -17,7 +17,7 @@ public class PaymentResponse {
         this.message = message;
     }
 
-    // Getters and Setters
+
     public boolean isSuccess() {
         return success;
     }

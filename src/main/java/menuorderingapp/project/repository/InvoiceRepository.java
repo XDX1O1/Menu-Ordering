@@ -23,7 +23,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     List<Invoice> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT i FROM Invoice i WHERE i.createdAt BETWEEN :startDate AND :endDate ORDER BY i.createdAt DESC")
+    @Query("SELECT i FROM Invoice i JOIN FETCH i.order o JOIN FETCH o.orderItems LEFT JOIN FETCH i.cashier WHERE i.createdAt BETWEEN :startDate AND :endDate ORDER BY i.createdAt DESC")
     List<Invoice> findInvoicesByDateRange(@Param("startDate") LocalDateTime startDate,
                                           @Param("endDate") LocalDateTime endDate);
 
@@ -31,6 +31,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Double getTotalInvoiceAmountBetween(@Param("start") LocalDateTime start,
                                         @Param("end") LocalDateTime end);
 
-    @Query("SELECT i FROM Invoice i JOIN FETCH i.order JOIN FETCH i.cashier WHERE i.id = :id")
+    @Query("SELECT i FROM Invoice i JOIN FETCH i.order LEFT JOIN FETCH i.cashier WHERE i.id = :id")
     Optional<Invoice> findByIdWithOrderAndCashier(Long id);
 }

@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
@@ -103,18 +103,15 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Menu item is not available: " + menu.getName());
         }
 
-        // Check if item already exists in order
         Optional<OrderItem> existingItem = order.getOrderItems().stream()
                 .filter(item -> item.getMenu().getId().equals(menuId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            // Update quantity
             OrderItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + quantity);
             orderItemRepository.save(item);
         } else {
-            // Add new item
             OrderItem newItem = new OrderItem(order, menu, quantity);
             order.addOrderItem(newItem);
             orderItemRepository.save(newItem);
@@ -184,6 +181,12 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
         return orderRepository.findOrdersByDateRange(startOfDay, endOfDay);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByDateRange(LocalDateTime start, LocalDateTime end) {
+        return orderRepository.findOrdersByDateRange(start, end);
     }
 
     @Override

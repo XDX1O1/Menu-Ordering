@@ -5,6 +5,8 @@ import menuorderingapp.project.model.Menu;
 import menuorderingapp.project.repository.CategoryRepository;
 import menuorderingapp.project.repository.MenuRepository;
 import menuorderingapp.project.service.MenuService;
+import menuorderingapp.project.service.MenuAuditService;
+import menuorderingapp.project.model.Cashier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,14 @@ public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
     private final CategoryRepository categoryRepository;
+    private final MenuAuditService auditService;
 
-    public MenuServiceImpl(MenuRepository menuRepository, CategoryRepository categoryRepository) {
+    public MenuServiceImpl(MenuRepository menuRepository,
+                          CategoryRepository categoryRepository,
+                          MenuAuditService auditService) {
         this.menuRepository = menuRepository;
         this.categoryRepository = categoryRepository;
+        this.auditService = auditService;
     }
 
     @Override
@@ -99,7 +105,6 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.findByIsPromoTrueAndAvailableTrue();
     }
 
-    // Category methods
     @Override
     @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
@@ -139,7 +144,6 @@ public class MenuServiceImpl implements MenuService {
     @Transactional(readOnly = true)
     public List<Category> getCategoriesWithMenus() {
         List<Category> categories = getAllCategories();
-        // Eagerly fetch menus for each category
         categories.forEach(category ->
                 category.setMenus(menuRepository.findByCategoryAndAvailableTrueOrderByName(category)));
         return categories;

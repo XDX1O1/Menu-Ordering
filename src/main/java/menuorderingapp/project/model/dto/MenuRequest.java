@@ -28,7 +28,7 @@ public class MenuRequest {
     @NotNull(message = "Category ID is required")
     private Long categoryId;
 
-    // Constructors
+
     public MenuRequest() {
     }
 
@@ -39,7 +39,7 @@ public class MenuRequest {
         this.categoryId = categoryId;
     }
 
-    // Getters and Setters
+
     public String getName() {
         return name;
     }

@@ -25,12 +25,10 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     public Cashier createCashier(Cashier cashier) {
-        // Validate username uniqueness
         if (cashierRepository.existsByUsername(cashier.getUsername())) {
             throw new RuntimeException("Username already exists: " + cashier.getUsername());
         }
 
-        // Encode password
         cashier.setPasswordHash(passwordEncoder.encode(cashier.getPasswordHash()));
         cashier.setIsActive(true);
 
@@ -66,7 +64,6 @@ public class CashierServiceImpl implements CashierService {
         Cashier existingCashier = cashierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cashier not found with id: " + id));
 
-        // Check if username is being changed and if it's unique
         if (!existingCashier.getUsername().equals(cashierDetails.getUsername()) &&
                 cashierRepository.existsByUsername(cashierDetails.getUsername())) {
             throw new RuntimeException("Username already exists: " + cashierDetails.getUsername());
@@ -76,7 +73,6 @@ public class CashierServiceImpl implements CashierService {
         existingCashier.setDisplayName(cashierDetails.getDisplayName());
         existingCashier.setRole(cashierDetails.getRole());
 
-        // Only update password if provided
         if (cashierDetails.getPasswordHash() != null && !cashierDetails.getPasswordHash().isEmpty()) {
             existingCashier.setPasswordHash(passwordEncoder.encode(cashierDetails.getPasswordHash()));
         }

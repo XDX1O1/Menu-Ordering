@@ -10,11 +10,11 @@ public class OrderItemResponse {
     private BigDecimal price;
     private BigDecimal subtotal;
 
-    // Constructors
+
     public OrderItemResponse() {
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

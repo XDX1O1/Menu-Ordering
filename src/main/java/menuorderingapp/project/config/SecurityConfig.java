@@ -7,12 +7,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -28,20 +25,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, enable in production with proper configuration
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                "/ws/**"
+                        )
+                )
                 .authorizeHttpRequests(authz -> authz
-                        // Public endpoints (customer facing)
                         .requestMatchers(
                                 "/",
-                                "/login",          
-                                "/customer",       
+                                "/login",
+                                "/customer",
                                 "/customer/**",
                                 "/auth/login",
                                 "/auth/api/login",
-                                "/api/menus",      
-                                "/api/categories", 
-                                "/ws/**",          
-                                "/setup/**", // Development only
+                                "/api/menus",
+                                "/api/categories",
+                                "/ws/**",
+                                "/setup/**",
                                 "/static/**",
                                 "/css/**",
                                 "/js/**",
@@ -50,7 +50,6 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
 
-                        // Cashier endpoints require authentication
                         .requestMatchers(
                                 "/cashier/**",
                                 "/auth/logout",
@@ -59,7 +58,6 @@ public class SecurityConfig {
                                 "/api/reports/**"
                         ).authenticated()
 
-                        // Admin only endpoints (for future use)
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated()
@@ -85,6 +83,24 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .accessDeniedPage("/auth/access-denied")
+                )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection(xss -> xss
+                                .headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
+                        )
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; " +
+                                        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
+                                        "img-src 'self' data: https:; " +
+                                        "font-src 'self' https://cdnjs.cloudflare.com; " +
+                                        "connect-src 'self'")
+                        )
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
                 );
 
         return http.build();

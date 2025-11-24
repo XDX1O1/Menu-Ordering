@@ -12,7 +12,7 @@ public class OrderItemRequest {
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
 
-    // Constructors
+
     public OrderItemRequest() {
     }
 
@@ -21,7 +21,7 @@ public class OrderItemRequest {
         this.quantity = quantity;
     }
 
-    // Getters and Setters
+
     public Long getMenuId() {
         return menuId;
     }

@@ -41,7 +41,6 @@ public class ReportServiceImpl implements ReportService {
         long totalOrders = orders.size();
         double averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-        // Group by payment method
         Map<Order.PaymentMethod, Double> revenueByPaymentMethod = orders.stream()
                 .collect(Collectors.groupingBy(
                         Order::getPaymentMethod,
@@ -90,7 +89,6 @@ public class ReportServiceImpl implements ReportService {
     public Map<String, Object> getCashierPerformanceReport(LocalDateTime startDate, LocalDateTime endDate) {
         List<Order> orders = orderRepository.findPaidOrdersBetween(startDate, endDate);
 
-        // Group by cashier
         Map<Cashier, List<Order>> ordersByCashier = orders.stream()
                 .filter(order -> order.getCashier() != null)
                 .collect(Collectors.groupingBy(Order::getCashier));

@@ -40,7 +40,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(String username, String password) {
         try {
-            // Authenticate using Spring Security
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
@@ -50,10 +49,8 @@ public class AuthServiceImpl implements AuthService {
             CashierUserDetails userDetails = (CashierUserDetails) authentication.getPrincipal();
             Cashier cashier = userDetails.getCashier();
 
-            // Update last login
             cashierService.updateLastLogin(cashier.getId());
 
-            // Create session token (for API calls)
             String sessionToken = generateSessionToken();
             LocalDateTime expiresAt = LocalDateTime.now().plusHours(8);
 
@@ -69,10 +66,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String sessionToken) {
-        // Clear Spring Security context
         SecurityContextHolder.clearContext();
 
-        // Remove session from database
         Optional<CashierSession> sessionOpt = sessionRepository.findBySessionToken(sessionToken);
         sessionOpt.ifPresent(sessionRepository::delete);
     }

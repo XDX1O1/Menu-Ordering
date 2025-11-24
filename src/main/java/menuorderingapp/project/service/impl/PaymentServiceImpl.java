@@ -50,11 +50,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         Order order = orderOpt.get();
 
-        // Simulate QR payment processing
-        // In real implementation, this would integrate with payment gateway
         try {
-            Thread.sleep(1000); // Simulate processing time
+            Thread.sleep(1000);
 
+            order.setPaymentMethod(Order.PaymentMethod.QR_CODE);
             order.setPaymentStatus(Order.PaymentStatus.PAID);
             order.setStatus(Order.OrderStatus.CONFIRMED);
             orderRepository.save(order);
@@ -75,11 +74,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         Order order = orderOpt.get();
 
-        // Check if enough cash was tendered
         if (amountTendered < order.getTotal().doubleValue()) {
             return false;
         }
 
+        order.setPaymentMethod(Order.PaymentMethod.CASH);
         order.setPaymentStatus(Order.PaymentStatus.PAID);
         order.setStatus(Order.OrderStatus.CONFIRMED);
         orderRepository.save(order);

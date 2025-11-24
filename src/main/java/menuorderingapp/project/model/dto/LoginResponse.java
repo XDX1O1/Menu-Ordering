@@ -6,7 +6,7 @@ public class LoginResponse {
     private CashierDto cashier;
     private String message;
 
-    // Constructors
+
     public LoginResponse() {
     }
 
@@ -16,7 +16,7 @@ public class LoginResponse {
         this.message = message;
     }
 
-    // Getters and Setters
+
     public String getSessionToken() {
         return sessionToken;
     }

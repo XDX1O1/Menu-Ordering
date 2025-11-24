@@ -14,7 +14,7 @@ public class ReportRequest {
 
     private String reportType; // "sales", "items", "cashier"
 
-    // Constructors
+
     public ReportRequest() {
     }
 
@@ -23,7 +23,7 @@ public class ReportRequest {
         this.endDate = endDate;
     }
 
-    // Getters and Setters
+
     public LocalDate getStartDate() {
         return startDate;
     }

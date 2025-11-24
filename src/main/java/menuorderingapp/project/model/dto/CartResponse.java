@@ -10,11 +10,11 @@ public class CartResponse {
     private BigDecimal total;
     private int totalItems;
 
-    // Constructors
+
     public CartResponse() {
     }
 
-    // Getters and Setters
+
     public List<CartItemResponse> getItems() {
         return items;
     }

@@ -1,7 +1,6 @@
 package menuorderingapp.project.model;
 
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -14,8 +13,11 @@ public class MenuAuditLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id", nullable = false)
+    @JoinColumn(name = "menu_id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Menu menu;
+
+    @Column(name = "menu_name")
+    private String menuName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cashier_id", nullable = false)
@@ -60,6 +62,9 @@ public class MenuAuditLog {
 
     public Menu getMenu() { return menu; }
     public void setMenu(Menu menu) { this.menu = menu; }
+
+    public String getMenuName() { return menuName; }
+    public void setMenuName(String menuName) { this.menuName = menuName; }
 
     public Cashier getCashier() { return cashier; }
     public void setCashier(Cashier cashier) { this.cashier = cashier; }

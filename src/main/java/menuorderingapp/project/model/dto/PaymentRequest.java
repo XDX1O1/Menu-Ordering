@@ -14,7 +14,7 @@ public class PaymentRequest {
     private Double cashAmount; // For cash payments
     private String qrData; // For QR payments
 
-    // Constructors
+
     public PaymentRequest() {
     }
 
@@ -23,7 +23,7 @@ public class PaymentRequest {
         this.paymentMethod = paymentMethod;
     }
 
-    // Getters and Setters
+
     public String getOrderNumber() {
         return orderNumber;
     }

@@ -14,11 +14,11 @@ public class CashierDto {
     private LocalDateTime lastLogin;
     private LocalDateTime createdAt;
 
-    // Constructors
+
     public CashierDto() {
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

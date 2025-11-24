@@ -9,7 +9,7 @@ public class CategoryRequest {
 
     private Integer displayOrder;
 
-    // Constructors
+
     public CategoryRequest() {
     }
 
@@ -18,7 +18,7 @@ public class CategoryRequest {
         this.displayOrder = displayOrder;
     }
 
-    // Getters and Setters
+
     public String getName() {
         return name;
     }

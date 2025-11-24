@@ -22,7 +22,7 @@ public class DashboardStatsResponse {
         this.recentOrders = recentOrders;
     }
 
-    // Getters and Setters
+
     public Double getTodayRevenue() {
         return todayRevenue;
     }

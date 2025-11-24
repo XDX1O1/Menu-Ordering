@@ -11,11 +11,11 @@ public class CartSummary {
     private BigDecimal total;
     private int totalItems;
 
-    // Constructors
+
     public CartSummary() {
     }
 
-    // Getters and Setters
+
     public List<OrderItemResponse> getItems() {
         return items;
     }

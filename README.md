@@ -141,8 +141,6 @@ See [docs/API.md](docs/API.md) for complete API documentation.
 - Security headers (HSTS, CSP, X-Frame-Options)
 - Environment-based configuration for sensitive data
 
-**⚠️ Important:** Before deploying to production, read [DEPLOYMENT_SECURITY.md](DEPLOYMENT_SECURITY.md) for critical security configurations and best practices.
-
 ## Troubleshooting
 
 **Port 8080 in use:**

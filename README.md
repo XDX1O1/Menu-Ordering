@@ -175,8 +175,8 @@ java -jar target/menu-ordering-app-0.0.1-SNAPSHOT.jar
 
 ## License
 
-[Specify your license]
+[LICENSE](LICENSE)
 
 ## Authors
 
-[Your name/team]
+Team Hola Holo Dont Even Know What We're Doing

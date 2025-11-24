@@ -664,15 +664,4 @@ stompClient.connect({}, function(frame) {
 stompClient.send("/app/ping", {}, "test message");
 ```
 
-## Error Codes
-
-### HTTP Status Codes
-- `200 OK` - Successful request
-- `201 Created` - Resource created successfully
-- `400 Bad Request` - Invalid request data
-- `401 Unauthorized` - Authentication required
-- `403 Forbidden` - Insufficient permissions
-- `404 Not Found` - Resource not found
-- `500 Internal Server Error` - Server error
-
 **Last Updated:** 2025-01-01

@@ -782,6 +782,35 @@ public class CashierController extends BaseController{
         }
     }
 
+    // Create New Category
+    @PostMapping("/api/categories")
+    public String createCategory(
+            @Valid @ModelAttribute CategoryRequest categoryRequest,
+            HttpSession session) {
+
+        if (!isAuthenticatedCashier()) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            // Create new category
+            Category newCategory = new Category();
+            newCategory.setName(categoryRequest.getName());
+            newCategory.setDisplayOrder(categoryRequest.getDisplayOrder());
+
+            // Save category
+            menuService.saveCategory(newCategory);
+
+            // Redirect back to settings page
+            return "redirect:/cashier/settings";
+
+        } catch (Exception e) {
+            // In case of error, redirect back with error handling
+            // You might want to add flash attributes here for error messages
+            return "redirect:/cashier/settings?error=" + e.getMessage();
+        }
+    }
+
     // Delete Category
     @DeleteMapping("/api/categories/{categoryId}")
     @ResponseBody

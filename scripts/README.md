@@ -92,6 +92,38 @@ bash scripts/backup_database.sh
 mysql -u chopchop_user -p restaurant_db < backups/backup_restaurant_db_20241124_120000.sql
 ```
 
+### 5. reset_database.sh
+**Fungsi**: Reset database ke state awal (fresh start)
+
+**PERINGATAN**: Script ini akan MENGHAPUS SEMUA DATA!
+
+**Usage**:
+```bash
+bash scripts/reset_database.sh
+```
+
+**Yang dilakukan**:
+1. Backup database sebelum reset (safety)
+2. Stop aplikasi
+3. Drop database lama
+4. Create database baru
+5. Restart aplikasi (Flyway auto-run migrations)
+6. Default data ter-insert otomatis
+
+**Kapan digunakan**:
+- Database sudah messy dengan test data
+- Ingin kembali ke default menu & cashiers
+- Ada error migration yang corrupt database
+- Testing fresh installation
+- Persiapan presentasi (clean state)
+
+**Hasil**:
+- Database fresh dengan default data
+- Menu items default (dari migrations)
+- Default cashiers: admin, kasir1, kasir2
+- Password: password123 (ganti setelah presentasi!)
+- Backup di `/opt/menu-ordering-app/backups/backup_before_reset_*.sql`
+
 ## Quick Start Guide
 
 ### First Time Setup
@@ -151,6 +183,12 @@ bash scripts/deploy.sh
 **Backup database (recommended: daily)**:
 ```bash
 bash scripts/backup_database.sh
+```
+
+**Reset database (if needed)**:
+```bash
+# WARNING: This deletes all data!
+bash scripts/reset_database.sh
 ```
 
 **Check logs**:

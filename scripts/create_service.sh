@@ -32,10 +32,10 @@ After=syslog.target network.target mysql.service
 [Service]
 User=chopchop
 Group=chopchop
-WorkingDirectory=/opt/menu-ordering-app
+WorkingDirectory=/opt/Menu-Ordering
 
 # Load environment variables from .env
-EnvironmentFile=/opt/menu-ordering-app/.env
+EnvironmentFile=/opt/Menu-Ordering/.env
 
 # Java execution with memory settings
 # Adjust -Xmx based on your VPS RAM (2g for 4GB VPS, 1g for 2GB VPS)

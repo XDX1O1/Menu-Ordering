@@ -16,10 +16,10 @@ print_error() { echo -e "${RED}✗ $1${NC}"; }
 print_info() { echo -e "${YELLOW}→ $1${NC}"; }
 
 # Load environment variables
-if [ -f "/opt/menu-ordering-app/.env" ]; then
-    source /opt/menu-ordering-app/.envjust
+if [ -f "/opt/Menu-Ordering/.env" ]; then
+    source /opt/Menu-Ordering/.env
 else
-    print_error ".env file not found at /opt/menu-ordering-app/.env"
+    print_error ".env file not found at /opt/Menu-Ordering/.env"
     exit 1
 fi
 
@@ -35,7 +35,7 @@ print_info "User: $DB_USERNAME"
 echo ""
 
 # Create backup directory
-BACKUP_DIR="/opt/menu-ordering-app/backups"
+BACKUP_DIR="/opt/Menu-Ordering/backups"
 mkdir -p $BACKUP_DIR
 
 # Generate backup filename with timestamp

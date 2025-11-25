@@ -18,13 +18,13 @@ print_warning() { echo -e "${YELLOW}⚠ $1${NC}"; }
 print_info() { echo -e "${YELLOW}→ $1${NC}"; }
 
 # Load environment variables
-if [ -f "/opt/menu-ordering-app/.env" ]; then
-    source /opt/menu-ordering-app/.env
+if [ -f "/opt/Menu-Ordering/.env" ]; then
+    source /opt/Menu-Ordering/.env
 elif [ -f ".env" ]; then
     source .env
 else
     print_error ".env file not found!"
-    print_info "Run this script from /opt/menu-ordering-app directory"
+    print_info "Run this script from /opt/Menu-Ordering directory"
     exit 1
 fi
 
@@ -66,7 +66,7 @@ echo ""
 
 # Step 1: Create backup first (safety)
 print_info "[1/5] Creating backup before reset..."
-BACKUP_DIR="/opt/menu-ordering-app/backups"
+BACKUP_DIR="/opt/Menu-Ordering/backups"
 mkdir -p $BACKUP_DIR 2>/dev/null || mkdir -p backups
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

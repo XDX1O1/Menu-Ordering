@@ -18,7 +18,7 @@ print_error() { echo -e "${RED}✗ $1${NC}"; }
 print_info() { echo -e "${YELLOW}→ $1${NC}"; }
 print_step() { echo -e "${BLUE}[$1/${2}]${NC} $3"; }
 
-APP_DIR="/opt/menu-ordering-app"
+APP_DIR="/opt/Menu-Ordering"
 SERVICE_NAME="chopchop"
 
 print_info "=========================================="

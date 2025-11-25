@@ -209,7 +209,7 @@ class CashierApp {
         // Update last update time
         const lastUpdateElement = document.getElementById('lastUpdate');
         if (lastUpdateElement) {
-            lastUpdateElement.textContent = new Date().toLocaleTimeString('id-ID');
+            lastUpdateElement.textContent = TimezoneUtils.formatTime(TimezoneUtils.now());
         }
     }
 
@@ -280,14 +280,7 @@ class CashierApp {
     }
 
     formatDateTime(dateString) {
-        const date = new Date(dateString);
-        const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-
-        const datePart = date.toLocaleDateString('id-ID', dateOptions);
-        const timePart = date.toLocaleTimeString('id-ID', timeOptions);
-
-        return `${datePart}, ${timePart}`;
+        return TimezoneUtils.formatDateTime(dateString);
     }
 
     async handleOrderAction(orderId, action) {
@@ -489,7 +482,7 @@ class CashierApp {
             if (dateFilterType.value === 'custom') {
                 customDate.style.display = 'block';
                 // Set default to today's date
-                const today = new Date().toISOString().split('T')[0];
+                const today = TimezoneUtils.toDateString();
                 customDate.value = today;
             } else {
                 customDate.style.display = 'none';
@@ -984,8 +977,7 @@ class CashierApp {
         }
 
         // Generate order details HTML
-        const orderDate = new Date(order.createdAt);
-        const formattedDate = orderDate.toLocaleDateString('id-ID', {
+        const formattedDate = TimezoneUtils.formatDateTime(order.createdAt, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -1215,7 +1207,7 @@ class CashierApp {
         console.log('Setting up reports page (v2)...');
 
         // Set default dates (today)
-        const today = new Date().toISOString().split('T')[0];
+        const today = TimezoneUtils.toDateString();
         startDateInput.value = today;
         endDateInput.value = today;
 
@@ -1425,8 +1417,7 @@ class CashierApp {
         }
 
         tableBody.innerHTML = invoices.map(invoice => {
-            const createdDate = new Date(invoice.createdAt);
-            const formattedDate = createdDate.toLocaleDateString('id-ID', {
+            const formattedDate = TimezoneUtils.formatDateTime(invoice.createdAt, {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
@@ -1656,8 +1647,7 @@ class CashierApp {
     generateInvoicePdf(invoice) {
         const printWindow = window.open('', '_blank');
 
-        const createdDate = new Date(invoice.createdAt);
-        const formattedDate = createdDate.toLocaleString('id-ID', {
+        const formattedDate = TimezoneUtils.formatDateTime(invoice.createdAt, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -1948,8 +1938,7 @@ class CashierApp {
         const printWindow = window.open('', '_blank');
 
         const invoiceRows = invoices.map((invoice, index) => {
-            const createdDate = new Date(invoice.createdAt);
-            const formattedDate = createdDate.toLocaleDateString('id-ID', {
+            const formattedDate = TimezoneUtils.formatDateTime(invoice.createdAt, {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
@@ -2126,7 +2115,7 @@ class CashierApp {
                 </div>
 
                 <div class="print-date">
-                    Dicetak pada: ${new Date().toLocaleString('id-ID')}
+                    Dicetak pada: ${TimezoneUtils.formatDateTime(TimezoneUtils.now())}
                 </div>
 
                 <div class="footer">

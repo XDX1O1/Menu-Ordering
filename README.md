@@ -109,7 +109,7 @@ menu-ordering-app/
 ## Documentation
 
 - [INSTALLATION.md](docs/INSTALLATION.md) - Detailed installation guide
-- [docs/API.md](docs/API.md) - REST API reference
+- [API.md](docs/API.md) - REST API reference
 
 ## Key Endpoints
 

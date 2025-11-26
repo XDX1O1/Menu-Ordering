@@ -31,14 +31,21 @@ const TimezoneUtils = {
 
     /**
      * Format date to Indonesian locale with Asia/Jakarta timezone
-     * @param {Date|string} date - Date object or ISO string
+     * @param {Date|string|Array} date - Date object, ISO string, or array
      * @param {object} options - Intl.DateTimeFormat options
      * @returns {string}
      */
     formatDate(date, options = {}) {
         if (!date) return '';
 
-        const dateObj = typeof date === 'string' ? this.parseDate(date) : date;
+        // Parse date if it's a string or array, otherwise use as-is
+        let dateObj;
+        if (typeof date === 'string' || Array.isArray(date)) {
+            dateObj = this.parseDate(date);
+        } else {
+            dateObj = date;
+        }
+
         if (!dateObj) return '';
 
         const defaultOptions = {
@@ -54,14 +61,21 @@ const TimezoneUtils = {
 
     /**
      * Format date and time to Indonesian locale with Asia/Jakarta timezone
-     * @param {Date|string} date - Date object or ISO string
+     * @param {Date|string|Array} date - Date object, ISO string, or array [year, month, day, hour, minute, second]
      * @param {object} options - Intl.DateTimeFormat options
      * @returns {string}
      */
     formatDateTime(date, options = {}) {
         if (!date) return '';
 
-        const dateObj = typeof date === 'string' ? this.parseDate(date) : date;
+        // Parse date if it's a string or array, otherwise use as-is
+        let dateObj;
+        if (typeof date === 'string' || Array.isArray(date)) {
+            dateObj = this.parseDate(date);
+        } else {
+            dateObj = date;
+        }
+
         if (!dateObj) return '';
 
         // Check if date is valid
@@ -92,14 +106,21 @@ const TimezoneUtils = {
 
     /**
      * Format time only to Indonesian locale with Asia/Jakarta timezone
-     * @param {Date|string} date - Date object or ISO string
+     * @param {Date|string|Array} date - Date object, ISO string, or array
      * @param {object} options - Intl.DateTimeFormat options
      * @returns {string}
      */
     formatTime(date, options = {}) {
         if (!date) return '';
 
-        const dateObj = typeof date === 'string' ? this.parseDate(date) : date;
+        // Parse date if it's a string or array, otherwise use as-is
+        let dateObj;
+        if (typeof date === 'string' || Array.isArray(date)) {
+            dateObj = this.parseDate(date);
+        } else {
+            dateObj = date;
+        }
+
         if (!dateObj) return '';
 
         const defaultOptions = {
@@ -153,13 +174,20 @@ const TimezoneUtils = {
 
     /**
      * Get relative time string (e.g., "2 minutes ago")
-     * @param {Date|string} date
+     * @param {Date|string|Array} date
      * @returns {string}
      */
     getRelativeTime(date) {
         if (!date) return '';
 
-        const dateObj = typeof date === 'string' ? this.parseDate(date) : date;
+        // Parse date if it's a string or array, otherwise use as-is
+        let dateObj;
+        if (typeof date === 'string' || Array.isArray(date)) {
+            dateObj = this.parseDate(date);
+        } else {
+            dateObj = date;
+        }
+
         if (!dateObj) return '';
 
         const now = this.now();

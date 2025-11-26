@@ -413,11 +413,45 @@ class CustomerApp {
     }
 
     removeFromCart(menuId) {
-        this.cart = this.cart.filter(item => item.menuId !== menuId);
-        this.saveCart();
-        this.updateCartCount();
-        this.updateCartDropdown();
-        this.showToast('Item removed from cart', 'info');
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        // Add CSRF token if available
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        fetch(`/customer/api/cart/remove/${menuId}`, {
+            method: 'DELETE',
+            headers: headers
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showToast('Item berhasil dihapus dari keranjang', 'info');
+
+                    // Reload cart from server
+                    this.loadCartFromSession();
+
+                    // Reload page if we're on cart page
+                    if (window.location.pathname.includes('/cart')) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 300);
+                    }
+                } else {
+                    this.showToast('Gagal menghapus item', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.showToast('Gagal menghapus item', 'error');
+            });
     }
 
     clearCart() {
@@ -445,18 +479,17 @@ class CustomerApp {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Clear local cart
-                    this.cart = [];
-                    this.saveCart();
-                    this.updateCartCount();
-                    this.updateCartDropdown();
-
-                    // Update cart sidebar if it exists
-                    if (typeof this.updateCartSidebar === 'function') {
-                        this.updateCartSidebar();
-                    }
-
                     this.showToast('Keranjang berhasil dikosongkan', 'success');
+
+                    // Reload cart from server
+                    this.loadCartFromSession();
+
+                    // Reload page if we're on cart page
+                    if (window.location.pathname.includes('/cart')) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    }
                 } else {
                     this.showToast('Gagal mengosongkan keranjang', 'error');
                 }

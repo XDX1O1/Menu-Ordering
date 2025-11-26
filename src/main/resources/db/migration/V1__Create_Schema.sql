@@ -83,7 +83,7 @@ CREATE TABLE invoices
     id             BIGINT AUTO_INCREMENT PRIMARY KEY,
     invoice_number VARCHAR(255) UNIQUE                     NOT NULL,
     order_id       BIGINT                                  NOT NULL,
-    cashier_id     BIGINT                                  NOT NULL,
+    cashier_id     BIGINT                                  NULL ,
     total_amount   DECIMAL(10, 2)                          NOT NULL,
     tax_amount     DECIMAL(10, 2) DEFAULT 0,
     final_amount   DECIMAL(10, 2)                          NOT NULL,

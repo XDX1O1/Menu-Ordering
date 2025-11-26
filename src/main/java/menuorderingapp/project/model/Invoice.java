@@ -21,7 +21,7 @@ public class Invoice {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cashier_id")
+    @JoinColumn(name = "cashier_id", nullable = true)
     private Cashier cashier;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)

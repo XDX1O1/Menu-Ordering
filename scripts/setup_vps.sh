@@ -138,6 +138,30 @@ else
 fi
 echo ""
 
+# Step 8b: Create webhook user (for CI/CD)
+print_info "Step 8b: Setting up webhook user for deployments..."
+if id "webhook" &>/dev/null; then
+    print_success "User 'webhook' already exists"
+else
+    read -p "Create user 'webhook' for automated deployments? (y/n): " -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        adduser --disabled-password --gecos "" webhook
+        print_success "User 'webhook' created"
+
+        # Add webhook user to chopchop group for file access
+        usermod -aG chopchop webhook
+
+        # Give webhook user sudo permission for specific deployment commands
+        echo "webhook ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart chopchop" >> /etc/sudoers.d/webhook
+        echo "webhook ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop chopchop" >> /etc/sudoers.d/webhook
+        echo "webhook ALL=(ALL) NOPASSWD: /usr/bin/systemctl start chopchop" >> /etc/sudoers.d/webhook
+        echo "webhook ALL=(ALL) NOPASSWD: /usr/bin/systemctl status chopchop" >> /etc/sudoers.d/webhook
+        chmod 0440 /etc/sudoers.d/webhook
+        print_success "Webhook user configured with limited sudo permissions"
+    fi
+fi
+echo ""
+
 # Step 9: Setup MySQL database
 print_info "Step 9: Setting up database..."
 echo ""
@@ -228,6 +252,13 @@ echo ""
 print_info "Access your application:"
 echo "  - Customer: http://YOUR_VPS_IP:8080/"
 echo "  - Cashier: http://YOUR_VPS_IP:8080/cashier/login"
+echo ""
+print_info "Users created:"
+echo "  - chopchop: Application owner (can SSH and manage app)"
+echo "  - webhook: CI/CD automation (limited permissions)"
+echo ""
+print_info "Optional: Setup GitHub webhook for auto-deployment"
+echo "  - See scripts/SCRIPTS.md 'Webhook Setup' section"
 echo ""
 print_info "To view this again, check: /opt/Menu-Ordering/.env"
 echo ""

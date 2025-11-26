@@ -283,6 +283,15 @@ class CashierApp {
     formatDateTime(dateString) {
         if (!dateString) return '-';
         try {
+            // Handle array format [year, month, day, hour, minute, second]
+            // This happens when Jackson serializes LocalDateTime as array
+            if (Array.isArray(dateString)) {
+                // Convert array to ISO string: [2025, 11, 26, 15, 9, 10] -> "2025-11-26T15:09:10"
+                const [year, month, day, hour, minute, second] = dateString;
+                const isoString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+                return TimezoneUtils.formatDateTime(isoString);
+            }
+
             // Try to parse the date
             const date = new Date(dateString);
             // Check if date is valid

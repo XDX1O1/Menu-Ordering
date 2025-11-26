@@ -281,7 +281,20 @@ class CashierApp {
     }
 
     formatDateTime(dateString) {
-        return TimezoneUtils.formatDateTime(dateString);
+        if (!dateString) return '-';
+        try {
+            // Try to parse the date
+            const date = new Date(dateString);
+            // Check if date is valid
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', dateString);
+                return '-';
+            }
+            return TimezoneUtils.formatDateTime(dateString);
+        } catch (e) {
+            console.error('Error formatting date:', dateString, e);
+            return '-';
+        }
     }
 
     async handleOrderAction(orderId, action) {
@@ -436,6 +449,11 @@ class CashierApp {
 
             if (data.success && data.data) {
                 console.log(`Received ${data.data.length} orders from API`);
+
+                // Debug: Log the first order's structure
+                if (data.data.length > 0) {
+                    console.log('Sample order structure:', data.data[0]);
+                }
 
                 // Store all orders for filtering
                 this.allOrders = data.data;

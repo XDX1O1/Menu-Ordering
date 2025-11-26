@@ -56,6 +56,12 @@ const TimezoneUtils = {
         const dateObj = typeof date === 'string' ? this.parseDate(date) : date;
         if (!dateObj) return '';
 
+        // Check if date is valid
+        if (isNaN(dateObj.getTime())) {
+            console.error('Invalid date object:', date);
+            return '';
+        }
+
         const defaultOptions = {
             timeZone: this.TIMEZONE,
             year: 'numeric',
@@ -68,7 +74,12 @@ const TimezoneUtils = {
             ...options
         };
 
-        return new Intl.DateTimeFormat(this.LOCALE, defaultOptions).format(dateObj);
+        try {
+            return new Intl.DateTimeFormat(this.LOCALE, defaultOptions).format(dateObj);
+        } catch (e) {
+            console.error('Error formatting date:', date, e);
+            return '';
+        }
     },
 
     /**

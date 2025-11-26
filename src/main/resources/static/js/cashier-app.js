@@ -1299,8 +1299,19 @@ class CashierApp {
 
                 // Filter orders by date range - compare only dates, not times
                 const filteredOrders = orders.filter(order => {
-                    // Extract date portion from order's createdAt (format: "2025-11-19T10:30:45")
-                    const orderDateStr = order.createdAt.split('T')[0]; // Get "2025-11-19"
+                    // Extract date portion from order's createdAt
+                    let orderDateStr;
+
+                    if (Array.isArray(order.createdAt)) {
+                        // Handle array format: [2025, 11, 26, 15, 9, 10] -> "2025-11-26"
+                        const [year, month, day] = order.createdAt;
+                        orderDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    } else if (typeof order.createdAt === 'string') {
+                        // Handle string format: "2025-11-19T10:30:45" -> "2025-11-19"
+                        orderDateStr = order.createdAt.split('T')[0];
+                    } else {
+                        return false; // Skip invalid dates
+                    }
 
                     // Compare as strings (YYYY-MM-DD format compares correctly)
                     return orderDateStr >= startDateStr && orderDateStr <= endDateStr;
@@ -1519,7 +1530,13 @@ class CashierApp {
         }
 
         // Generate invoice details HTML
-        const invoiceDate = new Date(invoice.createdAt);
+        // Handle both array and string date formats
+        let dateString = invoice.createdAt;
+        if (Array.isArray(dateString)) {
+            const [year, month, day, hour, minute, second] = dateString;
+            dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+        }
+        const invoiceDate = new Date(dateString);
         const formattedDate = invoiceDate.toLocaleDateString('id-ID', {
             year: 'numeric',
             month: 'long',

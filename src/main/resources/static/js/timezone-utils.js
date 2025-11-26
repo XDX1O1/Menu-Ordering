@@ -13,11 +13,19 @@ const TimezoneUtils = {
 
     /**
      * Parse date string to Date object
-     * @param {string} dateString - ISO date string from server
+     * @param {string|Array} dateString - ISO date string from server or array [year, month, day, hour, minute, second]
      * @returns {Date}
      */
     parseDate(dateString) {
         if (!dateString) return null;
+
+        // Handle array format from Jackson serialization
+        if (Array.isArray(dateString)) {
+            const [year, month, day, hour = 0, minute = 0, second = 0] = dateString;
+            const isoString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+            return new Date(isoString);
+        }
+
         return new Date(dateString);
     },
 

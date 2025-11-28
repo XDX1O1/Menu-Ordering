@@ -2607,7 +2607,8 @@ class CashierApp {
                 let showRow = true;
 
                 // Apply category filter
-                if (categoryValue && category !== categoryValue) {
+                // If categoryValue is 'semua', show all menus (don't filter by category)
+                if (categoryValue && categoryValue !== 'semua' && category !== categoryValue) {
                     showRow = false;
                 }
 

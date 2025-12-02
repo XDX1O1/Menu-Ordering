@@ -14,8 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterByCategory(category) {
         menuItems.forEach(item => {
             const itemCategory = item.getAttribute('data-category');
+            const isPromo = item.getAttribute('data-promo') === 'true';
 
-            if (category === 'SEMUA' || itemCategory === category) {
+            // Special handling for PROMO filter
+            if (category === 'PROMO') {
+                if (isPromo) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            } else if (category === 'SEMUA' || itemCategory === category) {
                 item.style.display = 'block';
             } else {
                 item.style.display = 'none';

@@ -41,7 +41,9 @@
 
             <!-- Menu Items Grid -->
             <div class="menu-grid" id="menuItems">
-                <div th:each="menu : ${menus}" class="menu-item" th:data-category="${menu.category.name}">
+                <div th:each="menu : ${menus}" class="menu-item"
+                     th:data-category="${menu.category.name}"
+                     th:data-promo="${menu.isPromo}">
                     <div class="menu-card">
                         <div class="menu-image" th:if="${menu.imageUrl}">
                             <img th:src="${menu.imageUrl}" th:alt="${menu.name}" class="img-fluid">

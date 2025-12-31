@@ -4,6 +4,10 @@
 # Untuk Ubuntu 22.04 LTS
 # Author: Team Hola Holo
 # Usage: sudo bash setup_vps.sh
+# Run this once on a brand new VPS
+# useradd -m chopchop
+# mkdir -p /opt/Menu-Ordering
+# chown -R chopchop:chopchop /opt/Menu-Ordering
 
 set -e  # Exit on error
 

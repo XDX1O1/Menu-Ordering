@@ -3,6 +3,20 @@
 # ChopChop - Webhook Auto Deploy Script
 # Triggered by GitHub webhook
 
+DEPLOY_USER="chopchop"
+
+echo "Ensuring correct permissions for $DEPLOY_USER..."
+
+# 1. Ensure the directory is owned by the deployment user
+chown -R $DEPLOY_USER:$DEPLOY_USER $REPO_DIR
+
+# 2. Add the safe directory exception specifically for the deployment user
+sudo -u $DEPLOY_USER git config --global --add safe.directory $REPO_DIR 2>/dev/null || true
+
+# 3. Clean up any stale lock files that cause "Permission Denied"
+rm -f $REPO_DIR/.git/index.lock
+rm -f $REPO_DIR/.git/FETCH_HEAD
+
 set -e
 
 # Logging

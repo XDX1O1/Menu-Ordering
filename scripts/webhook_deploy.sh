@@ -22,17 +22,10 @@ echo "=========================================="
 echo "Auto-Deploy triggered at $(date)"
 echo "=========================================="
 
-echo "Ensuring correct permissions for $APP_USER..."
+echo "Setting up Git safe directory for $APP_USER..."
 
-# 1. Ensure the directory is owned by the deployment user
-chown -R "$APP_USER:$APP_USER" "$APP_DIR"
-
-# 2. Add the safe directory exception specifically for the deployment user
+# Add the safe directory exception for the deployment user
 sudo -u "$APP_USER" git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
-
-# 3. Clean up any stale lock files that cause "Permission Denied"
-rm -f "$APP_DIR/.git/index.lock"
-rm -f "$APP_DIR/.git/FETCH_HEAD"
 
 # Navigate to app directory
 cd "$APP_DIR"

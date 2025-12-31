@@ -314,23 +314,58 @@ ufw allow 9000/tcp
 
 4. Click **Add webhook**
 
-### Step 6: Set Permissions
+### Step 6: Verify Permissions
+
+If you ran `setup_vps.sh`, the webhook user should already have the correct permissions. Verify with:
 
 ```bash
-# Give webhook user access to application directory
-# Use the APP_USER and APP_DIR from your config.sh
-chown -R <APP_USER>:<APP_USER> <APP_DIR>
-chmod -R g+rw <APP_DIR>
+# Check sudoers configuration
+sudo cat /etc/sudoers.d/<WEBHOOK_USER>
 
-# Add webhook user to app group (if not already done)
-usermod -aG <APP_USER> webhook
+# Should show permissions for:
+# - systemctl (restart, stop, start, status)
+# - git (for repository operations)
+# - chown (for fixing permissions if needed)
+# - rm (for cleanup operations)
+
+# Verify group membership
+groups <WEBHOOK_USER>
+# Should include: <APP_USER>
+
+# Verify directory permissions
+ls -la <APP_DIR>
+# Directory should be owned by <APP_USER>:<APP_USER> with group write permissions
+```
+
+**If permissions are missing** (e.g., you didn't run setup_vps.sh), set them manually:
+
+```bash
+# Give webhook user access to application directory via group
+sudo usermod -aG <APP_USER> <WEBHOOK_USER>
+
+# Set proper directory permissions
+sudo chown -R <APP_USER>:<APP_USER> <APP_DIR>
+sudo chmod -R g+rw <APP_DIR>
+
+# Create sudoers file for webhook user
+sudo tee /etc/sudoers.d/<WEBHOOK_USER> > /dev/null <<EOF
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart <APP_NAME>
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop <APP_NAME>
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /usr/bin/systemctl start <APP_NAME>
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /usr/bin/systemctl status <APP_NAME>
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /usr/bin/git
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /bin/chown
+<WEBHOOK_USER> ALL=(ALL) NOPASSWD: /bin/rm
+EOF
+
+sudo chmod 0440 /etc/sudoers.d/<WEBHOOK_USER>
 
 # Make deployment script executable
 chmod +x <APP_DIR>/scripts/webhook_deploy.sh
 
 # Ensure webhook user can write to log
 touch /var/log/<APP_NAME>-deploy.log
-chown webhook:webhook /var/log/<APP_NAME>-deploy.log
+chown <WEBHOOK_USER>:<WEBHOOK_USER> /var/log/<APP_NAME>-deploy.log
 ```
 
 ### Step 7: Test the Setup
@@ -387,15 +422,26 @@ curl -X POST http://YOUR_VPS_IP:9000/hooks/chopchop-deploy
 
 **Permission errors:**
 ```bash
-# Verify webhook user permissions
-sudo -u webhook ls -la /opt/Menu-Ordering
+# Verify webhook user has proper sudo permissions
+sudo cat /etc/sudoers.d/<WEBHOOK_USER>
+# Should include: systemctl, git, chown, rm
 
-# Check sudoers configuration
-cat /etc/sudoers.d/webhook
+# Verify webhook user group membership
+groups <WEBHOOK_USER>
+# Should include: <APP_USER>
 
-# Re-apply permissions
-chown -R chopchop:chopchop /opt/Menu-Ordering
-chmod -R g+rw /opt/Menu-Ordering
+# Verify directory permissions
+ls -ld <APP_DIR>
+# Should show: drwxrwxr-x or similar with group write (w)
+
+# Fix permissions if needed (run as root)
+sudo chown -R <APP_USER>:<APP_USER> <APP_DIR>
+sudo chmod -R g+rw <APP_DIR>
+sudo usermod -aG <APP_USER> <WEBHOOK_USER>
+
+# Test as webhook user
+sudo -u <WEBHOOK_USER> ls -la <APP_DIR>
+# Should work without "Permission denied" errors
 ```
 
 **Deployment fails:**
@@ -414,7 +460,12 @@ sudo -u webhook bash <APP_DIR>/scripts/webhook_deploy.sh
 
 1. **Use HTTPS in production**: Set up SSL/TLS with Let's Encrypt
 2. **Keep webhook secret secure**: Never commit to Git
-3. **Limit webhook user permissions**: Already configured in setup script
+3. **Limited webhook permissions**: The webhook user can only:
+   - Run git operations (pull, fetch, etc.)
+   - Restart/manage the application service
+   - Perform cleanup operations (rm)
+   - Fix ownership if needed (chown)
+   - These are the minimum permissions needed for deployment
 4. **Monitor webhook logs**: Regular checks for suspicious activity
 5. **Use Nginx reverse proxy**: For additional security layer (optional)
 

@@ -165,6 +165,9 @@ else
         echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop $APP_NAME" >> /etc/sudoers.d/"$WEBHOOK_USER"
         echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl start $APP_NAME" >> /etc/sudoers.d/"$WEBHOOK_USER"
         echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl status $APP_NAME" >> /etc/sudoers.d/"$WEBHOOK_USER"
+        echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /usr/bin/git" >> /etc/sudoers.d/"$WEBHOOK_USER"
+        echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers.d/"$WEBHOOK_USER"
+        echo "$WEBHOOK_USER ALL=(ALL) NOPASSWD: /bin/rm" >> /etc/sudoers.d/"$WEBHOOK_USER"
         chmod 0440 /etc/sudoers.d/"$WEBHOOK_USER"
         print_success "Webhook user configured with limited sudo permissions"
     fi
@@ -202,7 +205,8 @@ echo ""
 print_info "Step 10: Setting up application directory..."
 mkdir -p "$APP_DIR"
 chown -R "$APP_USER:$APP_USER" "$APP_DIR"
-print_success "Directory $APP_DIR created"
+chmod -R g+rw "$APP_DIR"
+print_success "Directory $APP_DIR created with group permissions"
 echo ""
 
 # Step 11: Create .env template

@@ -8,6 +8,7 @@
 # useradd -m chopchop
 # mkdir -p /opt/Menu-Ordering
 # chown -R chopchop:chopchop /opt/Menu-Ordering
+# Coba
 
 set -e  # Exit on error
 

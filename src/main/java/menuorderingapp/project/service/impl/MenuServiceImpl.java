@@ -6,7 +6,6 @@ import menuorderingapp.project.repository.CategoryRepository;
 import menuorderingapp.project.repository.MenuRepository;
 import menuorderingapp.project.service.MenuService;
 import menuorderingapp.project.service.MenuAuditService;
-import menuorderingapp.project.model.Cashier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

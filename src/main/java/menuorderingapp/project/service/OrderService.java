@@ -1,7 +1,6 @@
 package menuorderingapp.project.service;
 
 import menuorderingapp.project.model.Order;
-import menuorderingapp.project.model.OrderItem;
 
 import java.time.LocalDateTime;
 import java.util.List;

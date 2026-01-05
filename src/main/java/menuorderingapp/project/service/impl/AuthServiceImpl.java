@@ -7,6 +7,7 @@ import menuorderingapp.project.repository.CashierSessionRepository;
 import menuorderingapp.project.security.CashierUserDetails;
 import menuorderingapp.project.service.AuthService;
 import menuorderingapp.project.service.CashierService;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,9 +29,9 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthServiceImpl(CashierService cashierService,
-                           CashierRepository cashierRepository,
-                           CashierSessionRepository sessionRepository,
-                           AuthenticationManager authenticationManager) {
+            CashierRepository cashierRepository,
+            CashierSessionRepository sessionRepository,
+            AuthenticationManager authenticationManager) {
         this.cashierService = cashierService;
         this.cashierRepository = cashierRepository;
         this.sessionRepository = sessionRepository;
@@ -41,8 +42,7 @@ public class AuthServiceImpl implements AuthService {
     public String login(String username, String password) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
+                    new UsernamePasswordAuthenticationToken(username, password));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
